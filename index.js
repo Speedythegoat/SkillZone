@@ -8,5 +8,7 @@ app.use(bodyParser.json());
 
 app.use('/api/utilisateurs', utilisateurRoutes);
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`✅ Backend lancé sur http://localhost:${PORT}`));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(` Backend lancé sur http://localhost:${PORT}`));
+
