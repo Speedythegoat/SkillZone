@@ -1,4 +1,6 @@
 const supabase = require('../supabase/client');
+const bcrypt = require('bcrypt');
+
 
 const CreerUtilisateurs = async (userData) => {
   if (userData.MotDepasse) {
@@ -35,7 +37,7 @@ const ModifierUtilisateurs = async (id, updates) => {
 
  const SupprimerUtilisateurs = async (id) => {
   const { error } = await supabase
-    .from("id__utilisateur")
+    .from("_utilisateur")
     .delete()
     .eq("id__utilisateur", id);
 
