@@ -1,6 +1,11 @@
 const supabase = require('../supabase/client');
 
 const CreerUtilisateurs = async (userData) => {
+  if (userData.MotDepasse) {
+    const saltRounds = 10;
+    userData.MotDepasse = await bcrypt.hash(userData.MotDepasse, saltRounds);
+  }
+
   const { data, error } = await supabase
     .from('_utilisateur')
     .insert([userData])
@@ -21,7 +26,7 @@ const ModifierUtilisateurs = async (id, updates) => {
   const { data, error } = await supabase
     .from('_utilisateur')
     .update(updates)
-    .eq('_utilisateur', id)
+    .eq('id__utilisateur', id)
     .select();
 
   if (error) throw new Error(error.message);
@@ -30,9 +35,9 @@ const ModifierUtilisateurs = async (id, updates) => {
 
  const SupprimerUtilisateurs = async (id) => {
   const { error } = await supabase
-    .from("_utilisateur")
+    .from("id__utilisateur")
     .delete()
-    .eq("_utilisateur", id);
+    .eq("id__utilisateur", id);
 
   if (error) throw new Error(error.message);
   return { success: true, message: "Utilisateur Supprimmer" };

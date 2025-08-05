@@ -2,7 +2,7 @@ const {
   CreerUtilisateurs,
   RecupererUtilisateurs,
   ModifierUtilisateurs,
-  SupprimerUtilisateurs // ✅ corrigé ici
+  SupprimerUtilisateurs 
 } = require('../models/UtilisateurModel');
 
 const creerUtilisateur = async (req, res) => {
@@ -49,9 +49,52 @@ const supprimerUtilisateur = async (req, res) => {
   }
 };
 
+const loginUtilisateur = async (req, res) => {
+  const { email, motdepasse } = req.body;
+
+  try {
+    // 1. On cherche l’utilisateur + on check s’il est aussi auteur via jointure
+    const { data: utilisateur, error } = await supabase
+      .from('_utilisateur')
+      .select(`*, auteur:id__utilisateur (id__utilisateur)`) // jointure sur table auteur
+      .eq('email', email)
+      .single();
+
+    if (error || !utilisateur) {
+      return res.status(401).json({ message: "Email ou mot de passe invalide" });
+    }
+
+    // 2. Vérif du mot de passe
+    const passwordMatch = await bcrypt.compare(motdepasse, utilisateur.MotDepasse);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Email ou mot de passe invalide" });
+    }
+
+    // 3. Vérifie si c’est un auteur ou pas
+    const estAuteur = utilisateur.auteur !== null;
+
+    // 4. Réponse
+    return res.status(200).json({
+      message: "Connexion réussie",
+      utilisateur: {
+        id: utilisateur.id__utilisateur,
+        nom: utilisateur.Nom,
+        email: utilisateur.email,
+        role: estAuteur ? "auteur" : "utilisateur"
+      }
+    });
+
+  } catch (err) {
+    console.error("Erreur login :", err.message);
+    return res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+
 module.exports = {
   creerUtilisateur,
   getUtilisateurs,
   modifierUtilisateur,
+  loginUtilisateur,
   supprimerUtilisateur
 };
