@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 
 
 const CreerUtilisateurs = async (userData) => {
-  if (userData.MotDepasse) {
+  if (userData.motdepasse) {
     const saltRounds = 10;
-    userData.MotDepasse = await bcrypt.hash(userData.MotDepasse, saltRounds);
+    userData.motdepasse = await bcrypt.hash(userData.motdepasse, saltRounds);
   }
 
   const { data, error } = await supabase
