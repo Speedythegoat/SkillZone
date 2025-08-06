@@ -22,5 +22,7 @@ jobs:
       - name:  Installer les dépendances
         run: npm install
 
-      - name:  Lancer un test de démarrage
-        run: node index.js &
+      - name:  Lancer les tests Jest
+        run: npm test
+
+     
