@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const {
   CreerUtilisateurs,
   RecupererUtilisateurs,
