@@ -53,10 +53,13 @@ const loginUtilisateur = async (req, res) => {
   const { email, motdepasse } = req.body;
 
   try {
-    // 1. On cherche l’utilisateur + on check s’il est aussi auteur via jointure
+    // 1. On cherche l’utilisateur + jointure pour savoir s'il est auteur
     const { data: utilisateur, error } = await supabase
       .from('_utilisateur')
-      .select(`*, auteur:id__utilisateur (id__utilisateur)`) // jointure sur table auteur
+      .select(`
+        *,
+        auteur:id__utilisateur (id__utilisateur)
+      `)
       .eq('email', email)
       .single();
 
@@ -65,7 +68,7 @@ const loginUtilisateur = async (req, res) => {
     }
 
     // 2. Vérif du mot de passe
-    const passwordMatch = await bcrypt.compare(motdepasse, utilisateur.MotDepasse);
+    const passwordMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Email ou mot de passe invalide" });
     }
@@ -73,12 +76,12 @@ const loginUtilisateur = async (req, res) => {
     // 3. Vérifie si c’est un auteur ou pas
     const estAuteur = utilisateur.auteur !== null;
 
-    // 4. Réponse
+    // 4. Réponse avec rôle calculé
     return res.status(200).json({
       message: "Connexion réussie",
       utilisateur: {
         id: utilisateur.id__utilisateur,
-        nom: utilisateur.Nom,
+        nom: utilisateur.nom,
         email: utilisateur.email,
         role: estAuteur ? "auteur" : "utilisateur"
       }
