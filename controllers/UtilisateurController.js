@@ -2,6 +2,8 @@ const {
   CreerUtilisateurs,
   RecupererUtilisateurs,
   ModifierUtilisateurs,
+  TrouverUtilisateurParEmail,
+  EstAuteur,
   SupprimerUtilisateurs 
 } = require('../models/UtilisateurModel');
 
@@ -51,45 +53,31 @@ const supprimerUtilisateur = async (req, res) => {
 
 const loginUtilisateur = async (req, res) => {
   const { email, motdepasse } = req.body;
-
   try {
-    // 1. On cherche l’utilisateur + jointure pour savoir s'il est auteur
-    const { data: utilisateur, error } = await supabase
-      .from('_utilisateur')
-      .select(`
-        *,
-        auteur:id__utilisateur (id__utilisateur)
-      `)
-      .eq('email', email)
-      .single();
-
-    if (error || !utilisateur) {
-      return res.status(401).json({ message: "Email ou mot de passe invalide" });
+    const utilisateur = await TrouverUtilisateurParEmail(email);
+    if (!utilisateur) {
+      return res.status(401).json({ message: 'Email ou mot de passe invalide' });
     }
 
-    // 2. Vérif du mot de passe
-    const passwordMatch = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: "Email ou mot de passe invalide" });
+    const ok = await bcrypt.compare(motdepasse, utilisateur.motdepasse);
+    if (!ok) {
+      return res.status(401).json({ message: 'Email ou mot de passe invalide' });
     }
 
-    // 3. Vérifie si c’est un auteur ou pas
-    const estAuteur = utilisateur.auteur !== null;
+    const estAuteur = await EstAuteur(utilisateur.id__utilisateur);
 
-    // 4. Réponse avec rôle calculé
     return res.status(200).json({
-      message: "Connexion réussie",
+      message: 'Connexion réussie',
       utilisateur: {
         id: utilisateur.id__utilisateur,
         nom: utilisateur.nom,
         email: utilisateur.email,
-        role: estAuteur ? "auteur" : "utilisateur"
-      }
+        role: estAuteur ? 'auteur' : 'utilisateur',
+      },
     });
-
   } catch (err) {
-    console.error("Erreur login :", err.message);
-    return res.status(500).json({ message: "Erreur serveur" });
+    console.error('Erreur login :', err);
+    return res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 

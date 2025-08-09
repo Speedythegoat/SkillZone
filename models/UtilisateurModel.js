@@ -45,7 +45,30 @@ const ModifierUtilisateurs = async (id, updates) => {
   return { success: true, message: "Utilisateur Supprimmer" };
 };
 
+const TrouverUtilisateurParEmail = async (email) => {
+  const { data, error } = await supabase
+    .from('_utilisateur')
+    .select('id__utilisateur, nom, email, motdepasse')
+    .eq('email', email)
+    .single(); 
+
+  if (error) throw new Error(error.message);
+  return data;            
+};
+
+
+const EstAuteur = async (idUtilisateur) => {
+  const { data, error } = await supabase
+    .from('auteur')                 
+    .select('id__utilisateur')
+    .eq('id__utilisateur', idUtilisateur)
+    .maybeSingle();                
+
+  if (error) throw new Error(error.message);
+  return !!data;                 
+};
 
 
 
-module.exports = { CreerUtilisateurs,RecupererUtilisateurs,ModifierUtilisateurs,SupprimerUtilisateurs };
+
+module.exports = { CreerUtilisateurs,RecupererUtilisateurs,ModifierUtilisateurs,SupprimerUtilisateurs,TrouverUtilisateurParEmail,EstAuteur };
