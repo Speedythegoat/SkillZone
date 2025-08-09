@@ -1,14 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); 
 const utilisateurRoutes = require('./routes/utilisateurRoutes');
 require('dotenv').config();
 
 const app = express();
+
+
+app.use(cors({
+  origin: ["http://localhost:5173", "https://skillzone-frontend.onrender.com"], 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(bodyParser.json());
+
 
 app.use('/api/utilisateurs', utilisateurRoutes);
 
-// ✅ Compatible Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Backend lancé sur http://localhost:${PORT}`));
-
