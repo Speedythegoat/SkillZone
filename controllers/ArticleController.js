@@ -7,13 +7,9 @@ const {
   SupprimerArticle,
 } = require('../models/ArticleModel');
 
-// Helpers
+
 const toInt = (v) => (v === undefined || v === null || v === '' ? undefined : parseInt(v, 10));
 
-/**
- * POST /api/articles
- * body: { contenue, datepluplication?, imageprincipale?, id_commentaire?, id_club, id_categorie, id_auteur }
- */
 async function creerArticle(req, res) {
   try {
     const {
@@ -26,7 +22,6 @@ async function creerArticle(req, res) {
       id_auteur,
     } = req.body;
 
-    // Validations minimales
     if (!contenue || !id_club || !id_categorie || !id_auteur) {
       return res.status(400).json({
         message:
@@ -51,10 +46,7 @@ async function creerArticle(req, res) {
   }
 }
 
-/**
- * GET /api/articles
- * query: ?page=1&limit=12&search=...&categorieId=...&clubId=...&auteurId=...
- */
+
 async function getArticles(req, res) {
   try {
     const { page, limit, search, categorieId, clubId, auteurId } = req.query;
@@ -68,16 +60,14 @@ async function getArticles(req, res) {
       auteurId: toInt(auteurId),
     });
 
-    return res.status(200).json(result); // { items, count }
+    return res.status(200).json(result); 
   } catch (err) {
     console.error('getArticles ->', err);
     return res.status(500).json({ message: err.message || 'Erreur serveur' });
   }
 }
 
-/**
- * GET /api/articles/:id
- */
+
 async function getArticleParId(req, res) {
   try {
     const id = toInt(req.params.id);
@@ -95,10 +85,7 @@ async function getArticleParId(req, res) {
   }
 }
 
-/**
- * PUT /api/articles/:id
- * body: { contenue?, datepluplication?, imageprincipale?, id_commentaire?, id_club?, id_categorie?, id_auteur? }
- */
+
 async function modifierArticle(req, res) {
   try {
     const id = toInt(req.params.id);
@@ -120,16 +107,14 @@ async function modifierArticle(req, res) {
   }
 }
 
-/**
- * DELETE /api/articles/:id
- */
+
 async function supprimerArticle(req, res) {
   try {
     const id = toInt(req.params.id);
     if (!id) return res.status(400).json({ message: 'id invalide' });
 
     const result = await SupprimerArticle(id);
-    return res.status(200).json(result); // { success: true, message: 'Article supprimé' }
+    return res.status(200).json(result); 
   } catch (err) {
     console.error('supprimerArticle ->', err);
     return res.status(500).json({ message: err.message || 'Erreur serveur' });

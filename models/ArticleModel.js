@@ -5,7 +5,7 @@ const TABLE = 'article';
 
 // Sélection par défaut avec jointures lisibles pour le front
 const baseSelect = `
-  id_article, contenue, datepluplication, imageprincipale,
+  id_article, titre, contenue, datepluplication, imageprincipale,
   id_commentaire, id_club, id_categorie, id_auteur,
   categorie:id_categorie ( id_categorie, libelle ),
   club:id_club ( id_club, nom, logo ),
@@ -22,6 +22,7 @@ const baseSelect = `
  */
 async function CreerArticle(payload) {
   const row = {
+    titre: payload.titre ?? null,
     contenue: payload.contenue ?? null,
     datepluplication: payload.datepluplication || new Date().toISOString(), // garde l’orthographe de ta colonne !
     imageprincipale: payload.imageprincipale ?? null,
@@ -104,14 +105,15 @@ async function RecupererArticleParId(id) {
 async function ModifierArticle(id, updates) {
   // Whitelist des champs modifiables
   const allowed = [
-    'contenue',
-    'datepluplication',
-    'imageprincipale',
-    'id_commentaire',
-    'id_club',
-    'id_categorie',
-    'id_auteur',
-  ];
+  'titre',
+  'contenue',
+  'datepluplication',
+  'imageprincipale',
+  'id_commentaire',
+  'id_club',
+  'id_categorie',
+  'id_auteur',
+];
 
   const patch = {};
   for (const k of allowed) {
