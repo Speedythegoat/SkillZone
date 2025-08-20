@@ -50,10 +50,11 @@ const TrouverUtilisateurParEmail = async (email) => {
     .from('_utilisateur')
     .select('id__utilisateur, nom, email, motdepasse')
     .eq('email', email)
-    .single(); 
+    .maybeSingle();            // ← au lieu de .single()
 
-  if (error) throw new Error(error.message);
-  return data;            
+  // PGRST116 = "no rows" (pas d'erreur fatale ici)
+  if (error && error.code !== 'PGRST116') throw new Error(error.message);
+  return data;       
 };
 
 
