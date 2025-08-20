@@ -59,15 +59,16 @@ const TrouverUtilisateurParEmail = async (email) => {
 
 const EstAuteur = async (idUtilisateur) => {
   const { data, error } = await supabase
-    .from('auteur')                 
-    .select('id__utilisateur')
+    .from('auteur')
+    .select('id_auteur')
     .eq('id__utilisateur', idUtilisateur)
-    .maybeSingle();                
+    .maybeSingle(); 
 
-  if (error) throw new Error(error.message);
-  return !!data;                 
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(error.message);
+  }
+  return data; 
 };
-
 
 
 
