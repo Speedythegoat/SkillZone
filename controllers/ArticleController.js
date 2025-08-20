@@ -14,6 +14,7 @@ async function creerArticle(req, res) {
   try {
     const {
       contenue,
+      titre,
       datepluplication,
       imageprincipale,
       id_commentaire,
@@ -22,15 +23,16 @@ async function creerArticle(req, res) {
       id_auteur,
     } = req.body;
 
-    if (!contenue || !id_club || !id_categorie || !id_auteur) {
+    if (!contenue || !id_club || !id_categorie || !id_auteur|| !titre) {
       return res.status(400).json({
         message:
-          'Champs requis manquants: contenue, id_club, id_categorie, id_auteur.',
+          'Champs requis manquants: contenue, id_club, id_categorie, id_auteur,titre.',
       });
     }
 
     const article = await CreerArticle({
       contenue,
+      titre,
       datepluplication,
       imageprincipale,
       id_commentaire: toInt(id_commentaire),
