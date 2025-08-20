@@ -74,6 +74,7 @@ const loginUtilisateur = async (req, res) => {
         id: utilisateur.id__utilisateur,
         nom: utilisateur.nom,
         email: utilisateur.email,
+        id_auteur,
         role: estAuteur ? 'auteur' : 'utilisateur',
       },
     });
