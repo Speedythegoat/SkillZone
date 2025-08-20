@@ -63,12 +63,10 @@ const EstAuteur = async (idUtilisateur) => {
     .from('auteur')
     .select('id_auteur')
     .eq('id__utilisateur', idUtilisateur)
-    .maybeSingle(); 
+    .maybeSingle();
 
-  if (error && error.code !== 'PGRST116') {
-    throw new Error(error.message);
-  }
-  return data; 
+  if (error && error.code !== 'PGRST116') throw new Error(error.message);
+  return data?.id_auteur ?? null;  // 👈 nombre ou null
 };
 
 
